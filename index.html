@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Route des vins — Bourgogne</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root{
+    --lie-de-vin: #5b1a2b;
+    --lie-de-vin-dark: #3c0f1c;
+    --pierre: #f3ece1;
+    --pierre-dark: #e7dcc8;
+    --encre: #2a2420;
+    --or: #b8923f;
+    --or-pale: #d9c08a;
+    --vert-vigne: #4c5d3a;
+    --blanc-casse: #fbf8f3;
+    --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+    --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-data: "JetBrains Mono", "Courier New", monospace;
+  }
+
+  @font-face {
+    font-family: "Fraunces";
+    src: local("Fraunces");
+  }
+
+  *{ box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    margin:0;
+    background:var(--blanc-casse);
+    color:var(--encre);
+    font-family:var(--font-body);
+    line-height:1.55;
+  }
+
+  img{ max-width:100%; display:block; }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:
+      linear-gradient(180deg, rgba(59,15,28,0.88) 0%, rgba(59,15,28,0.94) 100%),
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.03) 0 2px, transparent 2px 18px);
+    color:var(--pierre);
+    padding:5.5rem 1.5rem 4rem;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute;
+    bottom:0; left:0; right:0;
+    height:6px;
+    background:linear-gradient(90deg, var(--or-pale), var(--or), var(--or-pale));
+  }
+  .hero-eyebrow{
+    font-family:var(--font-data);
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    font-size:0.72rem;
+    color:var(--or-pale);
+    margin-bottom:1.2rem;
+  }
+  .hero h1{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:clamp(2.1rem, 5vw, 3.4rem);
+    margin:0 0 0.6rem;
+    letter-spacing:-0.01em;
+  }
+  .hero p{
+    max-width:560px;
+    margin:0 auto;
+    color:var(--or-pale);
+    font-size:1.02rem;
+  }
+  .hero-tags{
+    display:flex;
+    gap:0.6rem;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-top:1.8rem;
+  }
+  .hero-tag{
+    border:1px solid rgba(216,192,138,0.4);
+    color:var(--pierre);
+    font-size:0.78rem;
+    padding:0.35rem 0.85rem;
+    border-radius:100px;
+    font-family:var(--font-data);
+  }
+
+  /* ---------- MAP SECTION ---------- */
+  .map-section{
+    padding:3rem 1.5rem 1rem;
+    max-width:1100px;
+    margin:0 auto;
+  }
+  .section-title{
+    font-family:var(--font-display);
+    font-size:1.7rem;
+    color:var(--lie-de-vin-dark);
+    margin:0 0 0.3rem;
+    display:flex;
+    align-items:baseline;
+    gap:0.6rem;
+  }
+  .section-title .num{
+    font-family:var(--font-data);
+    font-size:0.85rem;
+    color:var(--or);
+    font-weight:600;
+  }
+  .section-sub{
+    color:#6b5f53;
+    margin:0 0 1.6rem;
+    font-size:0.96rem;
+  }
+  #map{
+    height:480px;
+    border-radius:14px;
+    border:1px solid var(--pierre-dark);
+    box-shadow:0 12px 30px -10px rgba(59,15,28,0.25);
+  }
+  .map-legend{
+    display:flex;
+    gap:1.4rem;
+    flex-wrap:wrap;
+    margin-top:1rem;
+    font-size:0.85rem;
+    color:#6b5f53;
+  }
+  .map-legend span{
+    display:inline-flex;
+    align-items:center;
+    gap:0.4rem;
+  }
+  .dot{
+    width:10px; height:10px;
+    border-radius:50%;
+    display:inline-block;
+  }
+  .dot.nuits{ background:#7a2538; }
+  .dot.chalon{ background:#4c5d3a; }
+  .region-legend{ margin-top:0.4rem; }
+  .swatch{
+    width:14px; height:14px;
+    border-radius:3px;
+    border:1.5px solid;
+    display:inline-block;
+  }
+
+  /* ---------- CARDS ---------- */
+  .cards-section{
+    max-width:1100px;
+    margin:0 auto;
+    padding:1rem 1.5rem 5rem;
+  }
+  .domain-card{
+    background:#fff;
+    border:1px solid var(--pierre-dark);
+    border-radius:16px;
+    margin-bottom:2.2rem;
+    overflow:hidden;
+    box-shadow:0 8px 24px -12px rgba(42,36,32,0.12);
+    scroll-margin-top:1rem;
+  }
+  .card-label{
+    background:var(--lie-de-vin);
+    color:var(--pierre);
+    padding:1.3rem 1.8rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:1rem;
+    flex-wrap:wrap;
+    position:relative;
+  }
+  .card-label::before{
+    content:"";
+    position:absolute;
+    top:0; left:0;
+    width:5px; height:100%;
+    background:var(--or);
+  }
+  .card-label-left{ flex:1; min-width:200px; }
+  .card-region{
+    font-family:var(--font-data);
+    font-size:0.7rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--or-pale);
+    margin-bottom:0.35rem;
+  }
+  .card-title{
+    font-family:var(--font-display);
+    font-size:1.55rem;
+    margin:0;
+    font-weight:600;
+  }
+  .card-rating{
+    text-align:right;
+    flex-shrink:0;
+  }
+  .rating-stars{
+    color:var(--or-pale);
+    font-size:1.05rem;
+    letter-spacing:0.05em;
+  }
+  .rating-num{
+    font-family:var(--font-data);
+    font-size:0.78rem;
+    color:var(--pierre);
+    opacity:0.85;
+    margin-top:0.15rem;
+  }
+
+  .card-body{
+    padding:1.8rem;
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:1.8rem;
+  }
+  @media (max-width:760px){
+    .card-body{ grid-template-columns:1fr; }
+  }
+
+  .info-grid{
+    display:grid;
+    gap:1.1rem;
+  }
+  .info-row{
+    display:flex;
+    gap:0.9rem;
+    align-items:flex-start;
+  }
+  .info-icon{
+    flex-shrink:0;
+    width:34px; height:34px;
+    border-radius:9px;
+    background:var(--pierre);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.05rem;
+  }
+  .info-content label{
+    display:block;
+    font-family:var(--font-data);
+    font-size:0.7rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--or);
+    margin-bottom:0.2rem;
+  }
+  .info-content p{
+    margin:0;
+    font-size:0.94rem;
+    color:var(--encre);
+  }
+  .info-content p.muted{
+    color:#8a7d6e;
+    font-size:0.85rem;
+  }
+  .info-content a{
+    color:var(--lie-de-vin);
+    text-decoration:none;
+    border-bottom:1px solid var(--or-pale);
+  }
+  .info-content a:hover{ border-bottom-color:var(--lie-de-vin); }
+
+  .side-block{
+    background:var(--pierre);
+    border-radius:12px;
+    padding:1.4rem;
+  }
+  .side-block h4{
+    font-family:var(--font-display);
+    font-size:1.02rem;
+    margin:0 0 0.7rem;
+    color:var(--lie-de-vin-dark);
+  }
+  .side-block + .side-block{ margin-top:1.2rem; }
+
+  .wine-list{
+    list-style:none;
+    margin:0; padding:0;
+    font-size:0.88rem;
+  }
+  .wine-list li{
+    display:flex;
+    justify-content:space-between;
+    gap:0.6rem;
+    padding:0.45rem 0;
+    border-bottom:1px dashed var(--pierre-dark);
+  }
+  .wine-list li:last-child{ border-bottom:none; }
+  .wine-name{ color:var(--encre); }
+  .wine-price{
+    font-family:var(--font-data);
+    color:var(--lie-de-vin);
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  .tag-row{
+    display:flex;
+    gap:0.4rem;
+    flex-wrap:wrap;
+    margin-top:0.9rem;
+  }
+  .tag{
+    font-size:0.74rem;
+    padding:0.28rem 0.65rem;
+    border-radius:100px;
+    background:#fff;
+    border:1px solid var(--pierre-dark);
+    color:#6b5f53;
+    font-family:var(--font-data);
+  }
+
+  .hours-table{
+    width:100%;
+    font-size:0.85rem;
+    border-collapse:collapse;
+  }
+  .hours-table td{
+    padding:0.3rem 0;
+    border-bottom:1px dashed var(--pierre-dark);
+  }
+  .hours-table td:first-child{
+    color:#8a7d6e;
+    width:40%;
+  }
+  .hours-table tr:last-child td{ border-bottom:none; }
+  .closed{ color:#a14848; }
+
+  .source-note{
+    font-size:0.76rem;
+    color:#a08f7d;
+    margin-top:0.8rem;
+    font-style:italic;
+  }
+
+  .maps-link{
+    display:inline-flex;
+    align-items:center;
+    gap:0.4rem;
+    margin-top:0.6rem;
+    font-size:0.85rem;
+    font-weight:600;
+    color:var(--lie-de-vin);
+    text-decoration:none;
+  }
+  .maps-link:hover{ color:var(--lie-de-vin-dark); }
+
+  .link-row{
+    display:flex;
+    gap:1.1rem;
+    flex-wrap:wrap;
+    margin-top:0.6rem;
+  }
+  .link-row .maps-link{ margin-top:0; }
+
+  footer{
+    text-align:center;
+    padding:2.5rem 1.5rem 3rem;
+    color:#a08f7d;
+    font-size:0.82rem;
+    border-top:1px solid var(--pierre-dark);
+  }
+
+  /* Leaflet popup styling */
+  .leaflet-popup-content-wrapper{
+    border-radius:10px;
+    font-family:var(--font-body);
+  }
+  .popup-title{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1rem;
+    margin:0 0 0.2rem;
+    color:var(--lie-de-vin-dark);
+  }
+  .popup-region{
+    font-family:var(--font-data);
+    font-size:0.68rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--or);
+  }
+
+  .region-tooltip{
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+    font-family:var(--font-data) !important;
+    font-size:0.72rem !important;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--encre) !important;
+    font-weight:700;
+    text-shadow:
+      -1px -1px 0 #fff, 1px -1px 0 #fff,
+      -1px 1px 0 #fff, 1px 1px 0 #fff,
+      0 0 6px #fff;
+  }
+  .region-tooltip::before{ display:none !important; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-eyebrow">Bourgogne · Côte d'Or & Saône-et-Loire</div>
+  <h1>Route des vins</h1>
+  <p>Sélection de domaines et caveaux entre la Côte de Nuits et la Côte Chalonnaise, avec horaires, tarifs de dégustation et gammes de vins.</p>
+  <div class="hero-tags">
+    <span class="hero-tag">Nuits-Saint-Georges</span>
+    <span class="hero-tag">Mercurey</span>
+    <span class="hero-tag">Dégustation</span>
+    <span class="hero-tag">Ouvert le weekend</span>
+  </div>
+</header>
+
+<section class="map-section">
+  <h2 class="section-title"><span class="num">00</span> Carte des domaines</h2>
+  <p class="section-sub">Les zones colorées délimitent les grandes régions viticoles de Bourgogne. Cliquez sur un marqueur pour ouvrir la fiche du domaine correspondant.</p>
+  <div id="map"></div>
+  <div class="map-legend">
+    <span><span class="dot nuits"></span> Domaine en Côte de Nuits</span>
+    <span><span class="dot chalon"></span> Domaine en Côte Chalonnaise</span>
+  </div>
+  <div class="map-legend region-legend">
+    <span><span class="swatch" style="background:rgba(122,37,56,0.16);border-color:#7a2538;"></span> Côte de Nuits</span>
+    <span><span class="swatch" style="background:rgba(184,146,63,0.18);border-color:#b8923f;"></span> Côte de Beaune</span>
+    <span><span class="swatch" style="background:rgba(76,93,58,0.16);border-color:#4c5d3a;"></span> Côte Chalonnaise</span>
+    <span><span class="swatch" style="background:rgba(70,110,130,0.16);border-color:#466e82;"></span> Mâconnais</span>
+  </div>
+</section>
+
+<section class="cards-section">
+
+  <!-- ============ DOMAINE PHILIPPE GAVIGNET ============ -->
+  <article class="domain-card" id="gavignet">
+    <div class="card-label">
+      <div class="card-label-left">
+        <div class="card-region">Côte de Nuits · Nuits-Saint-Georges</div>
+        <h2 class="card-title">Domaine Philippe Gavignet</h2>
+      </div>
+      <div class="card-rating">
+        <div class="rating-stars">★★★★★</div>
+        <div class="rating-num">4.9 / 5 — Google</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-row">
+          <div class="info-icon">📍</div>
+          <div class="info-content">
+            <label>Adresse</label>
+            <p>36 Rue Dr Louis Legrand, 21700 Nuits-Saint-Georges, France</p>
+            <div class="link-row">
+              <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Domaine+Philippe+Gavignet+36+Rue+Dr+Louis+Legrand+21700+Nuits-Saint-Georges" target="_blank" rel="noopener">Google Maps →</a>
+              <a class="maps-link" href="https://www.domaine-gavignet.fr/" target="_blank" rel="noopener">Site du domaine →</a>
+            </div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">💶</div>
+          <div class="info-content">
+            <label>Dégustation</label>
+            <p>Gratuite, sur rendez-vous. Accueil assuré par un membre de la famille (Philippe, Benoit ou Élodie).</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🪨</div>
+          <div class="info-content">
+            <label>Visite</label>
+            <p>Pas de visite de cave formalisée comme chez les maisons de négoce : c'est un échange direct au caveau avec la famille, qui présente son travail de la vigne et fait déguster sa gamme.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🏞️</div>
+          <div class="info-content">
+            <label>Cadre</label>
+            <p>Propriété en plein village de Nuits-Saint-Georges, ambiance familiale et authentique plutôt que château d'apparat. 14 hectares sur la commune et les Hautes-Côtes de Nuits, certifié HVE niveau 3.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍽️</div>
+          <div class="info-content">
+            <label>Restauration à proximité</label>
+            <p class="muted">En plein centre de Nuits-Saint-Georges : plusieurs restaurants à pied, dont une ancienne maison de vigneron du XVIIIe avec salon à l'étage pour les groupes, ou des adresses plus simples type brasserie traditionnelle.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="side-block">
+          <h4>Horaires</h4>
+          <table class="hours-table">
+            <tr><td>Lun – Vendredi</td><td>9h–12h · 14h–17h30</td></tr>
+            <tr><td>Samedi – Dimanche</td><td>Sur demande</td></tr>
+          </table>
+          <p class="source-note">Pour un groupe de 7-8 personnes en weekend, appeler en amont pour confirmer la disponibilité d'un créneau "sur demande".</p>
+        </div>
+
+        <div class="side-block">
+          <h4>Gamme & prix indicatifs</h4>
+          <ul class="wine-list">
+            <li><span class="wine-name">Bourgogne Aligoté / Chardonnay / Pinot Noir</span><span class="wine-price">~12–15 €</span></li>
+            <li><span class="wine-name">Hautes-Côtes de Nuits</span><span class="wine-price">~15–20 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges Les Argillats</span><span class="wine-price">~30–40 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges Vieilles Vignes</span><span class="wine-price">~35–45 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges 1er Cru Les Chaboeufs</span><span class="wine-price">~55–70 €</span></li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Récoltant</span>
+            <span class="tag">5 générations</span>
+            <span class="tag">HVE niveau 3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ DOMAINE RAQUILLET ============ -->
+  <article class="domain-card" id="raquillet">
+    <div class="card-label">
+      <div class="card-label-left">
+        <div class="card-region">Côte Chalonnaise · Mercurey</div>
+        <h2 class="card-title">Domaine François Raquillet</h2>
+      </div>
+      <div class="card-rating">
+        <div class="rating-stars">★★★★★</div>
+        <div class="rating-num">4.9 / 5 — 40 avis Google</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-row">
+          <div class="info-icon">📍</div>
+          <div class="info-content">
+            <label>Adresse</label>
+            <p>19 Rue de Jamproyes, 71640 Mercurey, France</p>
+            <div class="link-row">
+              <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Domaine+Fran%C3%A7ois+Raquillet+19+Rue+de+Jamproyes+71640+Mercurey" target="_blank" rel="noopener">Google Maps →</a>
+              <a class="maps-link" href="https://www.domaine-raquillet.com/" target="_blank" rel="noopener">Site du domaine →</a>
+            </div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">💶</div>
+          <div class="info-content">
+            <label>Dégustation</label>
+            <p>Gratuite — accueil chaleureux et personnalisé, sur réservation uniquement.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🪨</div>
+          <div class="info-content">
+            <label>Visite</label>
+            <p>Dégustation en cave, présentée par la famille (Jeanne ou Alexis). Pas de visite de vignes formalisée — domaine à taille humaine, échange direct avec les vignerons.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🏞️</div>
+          <div class="info-content">
+            <label>Cadre</label>
+            <p>Propriété familiale au cœur du village de Mercurey, ambiance intimiste plutôt que château d'apparat. 14 hectares en Côte Chalonnaise, certifié Haute Valeur Environnementale depuis 2022.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍽️</div>
+          <div class="info-content">
+            <label>Restauration à proximité</label>
+            <p class="muted">Mercurey est un petit village viticole avec peu d'options sur place. Privilégier Chagny (10 min) ou Givry (10 min) pour un déjeuner de groupe.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="side-block">
+          <h4>Horaires</h4>
+          <table class="hours-table">
+            <tr><td>Lun – Vendredi</td><td>9h–12h · 14h–17h</td></tr>
+            <tr><td>Samedi</td><td>9h30–12h</td></tr>
+            <tr><td>Dimanche</td><td class="closed">Fermé</td></tr>
+          </table>
+          <p class="source-note">Réservation par téléphone fortement conseillée, surtout pour un groupe de 7-8 personnes.</p>
+        </div>
+
+        <div class="side-block">
+          <h4>Gamme & prix indicatifs</h4>
+          <ul class="wine-list">
+            <li><span class="wine-name">Bourgogne (rouge/blanc)</span><span class="wine-price">~12–15 €</span></li>
+            <li><span class="wine-name">Mercurey Vieilles Vignes</span><span class="wine-price">~18–22 €</span></li>
+            <li><span class="wine-name">Mercurey La Brigadière (blanc)</span><span class="wine-price">~18–22 €</span></li>
+            <li><span class="wine-name">Mercurey 1er Cru Les Naugues</span><span class="wine-price">~28–35 €</span></li>
+            <li><span class="wine-name">Mercurey 1er Cru Les Veleys</span><span class="wine-price">~28–35 €</span></li>
+            <li><span class="wine-name">Rully 1er Cru Grésigny</span><span class="wine-price">~25–30 €</span></li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Récoltant</span>
+            <span class="tag">11 générations</span>
+            <span class="tag">HVE</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ CAVEAU DIVIN ============ -->
+  <article class="domain-card" id="caveau-divin">
+    <div class="card-label">
+      <div class="card-label-left">
+        <div class="card-region">Côte Chalonnaise · Mercurey</div>
+        <h2 class="card-title">Caveau Divin</h2>
+      </div>
+      <div class="card-rating">
+        <div class="rating-stars">★★★★☆</div>
+        <div class="rating-num">4.3 / 5 — 226 avis Google</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-row">
+          <div class="info-icon">📍</div>
+          <div class="info-content">
+            <label>Adresse</label>
+            <p>101 Grande Rue, 71640 Mercurey, France</p>
+            <div class="link-row">
+              <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Caveau+Divin+101+Grande+Rue+71640+Mercurey" target="_blank" rel="noopener">Google Maps →</a>
+              <a class="maps-link" href="https://mercurey.com/le-caveau-divin/" target="_blank" rel="noopener">Site du caveau →</a>
+            </div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">💶</div>
+          <div class="info-content">
+            <label>Dégustation</label>
+            <p>Système à la carte prépayée (5 € la carte) : chaque vin coûte entre 0,80 € et 2,50 € selon la dose choisie via les bornes Enomatic. Très adapté pour goûter beaucoup de vins différents sans engagement.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🪨</div>
+          <div class="info-content">
+            <label>Visite</label>
+            <p>Ce n'est pas un domaine mais un caveau collectif : pas de visite de cave ou de vignes. C'est un bar à vins où l'on déguste au verre les vins de nombreux producteurs de la région.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🏞️</div>
+          <div class="info-content">
+            <label>Cadre</label>
+            <p>Cadre cosy en plein village de Mercurey, ambiance conviviale et décontractée. Personnel parlant français et anglais, conseils sur les domaines à visiter ensuite.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍽️</div>
+          <div class="info-content">
+            <label>Restauration à proximité</label>
+            <p class="muted">Sur la Grande Rue de Mercurey, quelques options de petite restauration à pied. Givry et Chagny restent les meilleures options pour un repas complet en groupe.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="side-block">
+          <h4>Horaires</h4>
+          <table class="hours-table">
+            <tr><td>Lun – Samedi</td><td>10h–13h · 14h–19h</td></tr>
+            <tr><td>Dimanche</td><td>10h–13h</td></tr>
+          </table>
+          <p class="source-note">Le seul lieu de cette sélection ouvert tous les jours, y compris le dimanche.</p>
+        </div>
+
+        <div class="side-block">
+          <h4>Gamme & prix indicatifs</h4>
+          <ul class="wine-list">
+            <li><span class="wine-name">Dégustation au verre (dose)</span><span class="wine-price">0,80–2,50 €</span></li>
+            <li><span class="wine-name">Carte prépayée</span><span class="wine-price">5 €</span></li>
+            <li><span class="wine-name">60+ vins de la région</span><span class="wine-price">Prix variables</span></li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Multi-producteurs</span>
+            <span class="tag">Dégustation au verre</span>
+            <span class="tag">Ouvert 7j/7</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ CHATEAU DE CHAMIREY ============ -->
+  <article class="domain-card" id="chamirey">
+    <div class="card-label">
+      <div class="card-label-left">
+        <div class="card-region">Côte Chalonnaise · Mercurey</div>
+        <h2 class="card-title">Château de Chamirey</h2>
+      </div>
+      <div class="card-rating">
+        <div class="rating-stars">★★★★☆</div>
+        <div class="rating-num">4.5 / 5 — 132 avis Google</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-row">
+          <div class="info-icon">📍</div>
+          <div class="info-content">
+            <label>Adresse</label>
+            <p>Rue du Château, 71640 Mercurey, France</p>
+            <div class="link-row">
+              <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Ch%C3%A2teau+de+Chamirey+Rue+du+Ch%C3%A2teau+71640+Mercurey" target="_blank" rel="noopener">Google Maps →</a>
+              <a class="maps-link" href="https://www.chamirey.com/" target="_blank" rel="noopener">Site du domaine →</a>
+            </div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">💶</div>
+          <div class="info-content">
+            <label>Dégustation</label>
+            <p>Formule à 15 € pour 5 vins (Mercurey villages et Premiers Crus), offerte selon le montant des achats. Formules à la carte disponibles pour les groupes sur réservation.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🪨</div>
+          <div class="info-content">
+            <label>Visite</label>
+            <p>Visite de la cuverie historique du XVIIIe siècle, possibilité de balade dans les vignes ou d'escapade en 4×4. Visite menée par la famille Devillard elle-même selon les avis.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🏞️</div>
+          <div class="info-content">
+            <label>Cadre</label>
+            <p>Le plus spectaculaire de la sélection : château du XVIIIe siècle dominant 37 hectares de vignes, dont 7 Premiers Crus. Vue dégagée sur les coteaux, possibilité de déguster en terrasse avec planche apéritive.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍽️</div>
+          <div class="info-content">
+            <label>Restauration à proximité</label>
+            <p class="muted">Le domaine propose lui-même une formule repas avec plat du jour accompagné des vins de la maison (sans carte, menu unique). Sinon, Chagny à 10 minutes offre davantage de choix.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="side-block">
+          <h4>Horaires</h4>
+          <table class="hours-table">
+            <tr><td>Lun – Samedi</td><td>10h–19h</td></tr>
+            <tr><td>Dimanche</td><td class="closed">Fermé</td></tr>
+          </table>
+          <p class="source-note">Réservation recommandée pour un groupe de 7-8 personnes, notamment pour les formules 4×4 ou repas.</p>
+        </div>
+
+        <div class="side-block">
+          <h4>Gamme & prix indicatifs</h4>
+          <ul class="wine-list">
+            <li><span class="wine-name">Mercurey En Pierrelet (blanc)</span><span class="wine-price">~20–25 €</span></li>
+            <li><span class="wine-name">Mercurey rouge village</span><span class="wine-price">~22–28 €</span></li>
+            <li><span class="wine-name">Mercurey 1er Cru Les Ruelles</span><span class="wine-price">~38–45 €</span></li>
+            <li><span class="wine-name">Mercurey 1er Cru La Mission</span><span class="wine-price">~38–45 €</span></li>
+            <li><span class="wine-name">Cuvée "Les Cinq" (assemblage 1ers Crus)</span><span class="wine-price">~50–60 €</span></li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">37 ha</span>
+            <span class="tag">7 Premiers Crus</span>
+            <span class="tag">Monopoles</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ CAVEAU MOILLARD ============ -->
+  <article class="domain-card" id="moillard">
+    <div class="card-label">
+      <div class="card-label-left">
+        <div class="card-region">Côte de Nuits · Nuits-Saint-Georges</div>
+        <h2 class="card-title">Caveau Moillard</h2>
+      </div>
+      <div class="card-rating">
+        <div class="rating-stars">★★★★☆</div>
+        <div class="rating-num">4.6 / 5 — 712 avis Google</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-row">
+          <div class="info-icon">📍</div>
+          <div class="info-content">
+            <label>Adresse</label>
+            <p>2 Route de Dijon, 21700 Nuits-Saint-Georges, France</p>
+            <div class="link-row">
+              <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Caveau+Moillard+2+Route+de+Dijon+21700+Nuits-Saint-Georges" target="_blank" rel="noopener">Google Maps →</a>
+              <a class="maps-link" href="https://www.moillard.fr/fr/caveaux?id_caveau=3" target="_blank" rel="noopener">Site du caveau →</a>
+            </div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">💶</div>
+          <div class="info-content">
+            <label>Dégustation</label>
+            <p>Visite du chai et de la cave gratuite. Dégustation commentée ensuite payante : formule Découverte (3 ou 5 vins) ou formule Prestige 6 vins avec un Grand Cru, autour de 25 € selon les avis clients.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🪨</div>
+          <div class="info-content">
+            <label>Visite</label>
+            <p>Visite guidée d'environ une heure : cuverie où sont vinifiés les vins de la Côte de Nuits, puis cave voûtée du XIXe siècle. C'est une maison de négoce (pas un domaine cultivant ses propres vignes), donc visite très structurée et touristique.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🏞️</div>
+          <div class="info-content">
+            <label>Cadre</label>
+            <p>Caveau historique aux murs extérieurs décorés d'une frise en mosaïques représentant les paysages de vignes. Situé sur la route des vins, en entrée de Nuits-Saint-Georges. Capacité d'accueil de groupe confirmée par les avis (groupe de 6 mentionné).</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍽️</div>
+          <div class="info-content">
+            <label>Restauration à proximité</label>
+            <p class="muted">Nuits-Saint-Georges est à 2 minutes à pied : plusieurs restaurants en centre-ville, dont une ancienne maison de vigneron du XVIIIe avec salon à l'étage pour les groupes, ou des adresses plus simples type brasserie.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="side-block">
+          <h4>Horaires</h4>
+          <table class="hours-table">
+            <tr><td>Mai – Septembre</td><td>Tous les jours 10h–19h</td></tr>
+            <tr><td>Octobre – Avril</td><td>Tous les jours 10h–18h</td></tr>
+          </table>
+          <p class="source-note">⚠️ Le site officiel indique 7j/7, mais Google Maps signale une fermeture le mercredi — à confirmer par téléphone avant de venir. Visites non garanties pendant les vendanges (mi-septembre à fin octobre).</p>
+        </div>
+
+        <div class="side-block">
+          <h4>Gamme & prix indicatifs</h4>
+          <ul class="wine-list">
+            <li><span class="wine-name">Bourgogne Hautes-Côtes de Nuits</span><span class="wine-price">~18–22 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges Les Argillats</span><span class="wine-price">~35–45 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges Vieilles Vignes</span><span class="wine-price">~45–55 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges 1er Cru Les Damodes</span><span class="wine-price">~60–80 €</span></li>
+            <li><span class="wine-name">Grand Cru (sélection Hospices)</span><span class="wine-price">100 €+</span></li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Maison de négoce 1850</span>
+            <span class="tag">50+ appellations</span>
+            <span class="tag">Capacité 8 pers.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+</section>
+
+<footer>
+  Route des vins · Bourgogne (Côte de Nuits & Côte Chalonnaise) — informations vérifiées à titre indicatif (horaires et tarifs susceptibles de changer, réservation conseillée).
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const domaines = [
+    {
+      name: "Domaine Philippe Gavignet",
+      region: "Côte de Nuits",
+      lat: 47.1333880, lng: 4.9520830,
+      color: "#7a2538",
+      anchor: "gavignet"
+    },
+    {
+      name: "Caveau Moillard",
+      region: "Côte de Nuits",
+      lat: 47.1394064, lng: 4.9515767,
+      color: "#7a2538",
+      anchor: "moillard"
+    },
+    {
+      name: "Domaine François Raquillet",
+      region: "Côte Chalonnaise",
+      lat: 46.8394577, lng: 4.7203516,
+      color: "#4c5d3a",
+      anchor: "raquillet"
+    },
+    {
+      name: "Caveau Divin",
+      region: "Côte Chalonnaise",
+      lat: 46.8362789, lng: 4.7167749,
+      color: "#4c5d3a",
+      anchor: "caveau-divin"
+    },
+    {
+      name: "Château de Chamirey",
+      region: "Côte Chalonnaise",
+      lat: 46.8248564, lng: 4.7235317,
+      color: "#4c5d3a",
+      anchor: "chamirey"
+    }
+  ];
+
+  // Zones approximatives des grandes régions viticoles de Bourgogne (nord -> sud)
+  // Bandes rectangulaires simplifiées le long de la Côte, à but illustratif.
+  const regions = [
+    {
+      name: "Côte de Nuits",
+      color: "#7a2538",
+      fill: "rgba(122,37,56,0.10)",
+      bounds: [[47.06, 4.84], [47.34, 5.10]]
+    },
+    {
+      name: "Côte de Beaune",
+      color: "#b8923f",
+      fill: "rgba(184,146,63,0.12)",
+      bounds: [[46.90, 4.68], [47.07, 4.95]]
+    },
+    {
+      name: "Côte Chalonnaise",
+      color: "#4c5d3a",
+      fill: "rgba(76,93,58,0.10)",
+      bounds: [[46.62, 4.62], [46.89, 4.85]]
+    },
+    {
+      name: "Mâconnais",
+      color: "#466e82",
+      fill: "rgba(70,110,130,0.10)",
+      bounds: [[46.24, 4.65], [46.62, 4.90]]
+    }
+  ];
+
+  const map = L.map('map', { scrollWheelZoom: false }).setView([46.9, 4.85], 8);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 18
+  }).addTo(map);
+
+  const bounds = [];
+
+  // Tracé des zones régionales (rectangles arrondis stylisés)
+  regions.forEach(r => {
+    L.rectangle(r.bounds, {
+      color: r.color,
+      weight: 1.5,
+      fillColor: r.fill,
+      fillOpacity: 1,
+      dashArray: '4 4'
+    }).addTo(map).bindTooltip(r.name, {
+      permanent: true,
+      direction: 'center',
+      className: 'region-tooltip',
+      opacity: 0.9
+    });
+    bounds.push(r.bounds[0]);
+    bounds.push(r.bounds[1]);
+  });
+
+  domaines.forEach(d => {
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="width:18px;height:18px;border-radius:50%;background:${d.color};border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>`,
+      iconSize: [18, 18],
+      iconAnchor: [9, 9]
+    });
+
+    const marker = L.marker([d.lat, d.lng], { icon, zIndexOffset: 1000 }).addTo(map);
+    marker.bindPopup(`
+      <div class="popup-region">${d.region}</div>
+      <div class="popup-title">${d.name}</div>
+      <a href="#${d.anchor}" style="font-size:0.8rem;color:#5b1a2b;">Voir la fiche complète ↓</a>
+    `);
+    bounds.push([d.lat, d.lng]);
+  });
+
+  map.fitBounds(bounds, { padding: [30, 30] });
+
+</script>
+
+</body>
+</html>
