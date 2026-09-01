@@ -148,6 +148,97 @@
   }
   .dot.nuits{ background:#7a2538; }
   .dot.chalon{ background:#4c5d3a; }
+
+  /* ===== ZONES ET ACCORDÉONS ===== */
+  .zone-header{
+    margin: 2.5rem 0 0.6rem;
+    display:flex;
+    align-items:center;
+    gap:1rem;
+  }
+  .zone-badge{
+    display:inline-block;
+    font-family:var(--font-data);
+    font-size:0.72rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    font-weight:700;
+    padding:0.35rem 0.9rem;
+    border-radius:100px;
+    color:#fff;
+  }
+  .zone-nuits{ background:var(--lie-de-vin); }
+  .zone-chalon{ background:#4c5d3a; }
+
+  /* Bannière coup de cœur */
+  .domain-card.featured{
+    border:2px solid var(--or);
+    box-shadow: 0 4px 20px rgba(184,146,63,0.18);
+  }
+  .featured-banner{
+    background:var(--or);
+    color:#fff;
+    font-family:var(--font-data);
+    font-size:0.72rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    font-weight:700;
+    padding:0.35rem 1.2rem;
+    border-radius:10px 10px 0 0;
+    margin:-1.8rem -1.8rem 1.2rem;
+  }
+  @media(max-width:600px){
+    .featured-banner{ margin:-1.2rem -1.2rem 1rem; border-radius:8px 8px 0 0; }
+  }
+
+  /* Accordéon */
+  .accordion-zone{
+    margin: 0.8rem 0 0;
+  }
+  .accordion-btn{
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0.85rem 1.2rem;
+    background:var(--pierre);
+    border:1.5px solid var(--pierre-dark);
+    border-radius:10px;
+    font-family:var(--font-body);
+    font-size:0.95rem;
+    font-weight:600;
+    color:var(--lie-de-vin);
+    cursor:pointer;
+    transition:background 0.15s ease;
+    text-align:left;
+  }
+  .accordion-btn:hover{ background:#e8dfd0; }
+  .accordion-btn[aria-expanded="true"]{ border-radius:10px 10px 0 0; background:#e8dfd0; }
+  .acc-arrow{
+    font-size:0.8rem;
+    color:var(--or);
+    transition:transform 0.25s ease;
+    flex-shrink:0;
+    margin-left:1rem;
+  }
+  .accordion-btn[aria-expanded="true"] .acc-arrow{ transform:rotate(180deg); }
+  .accordion-body{
+    display:none;
+    border:1.5px solid var(--pierre-dark);
+    border-top:none;
+    border-radius:0 0 10px 10px;
+    padding:1.2rem 0 0;
+    background:#faf7f2;
+  }
+  .accordion-body.is-open{ display:block; }
+  .accordion-body .domain-card{
+    margin:0 1.2rem 1.2rem;
+  }
+  @media(max-width:600px){
+    .accordion-btn{ padding:0.85rem 1rem; font-size:0.9rem; }
+    .accordion-body .domain-card{ margin:0 0.5rem 0.8rem; }
+  }
+
   .region-legend{ margin-top:0.4rem; }
   .region-pill{
     display:inline-flex;
@@ -480,8 +571,104 @@
 
 <section class="cards-section">
 
-  <!-- ============ DOMAINE PHILIPPE GAVIGNET ============ -->
-  <article class="domain-card" id="gavignet">
+  <!-- ===== ZONE NSG ===== -->
+  <div class="zone-header">
+    <div class="zone-badge zone-nuits">Côte de Nuits · Nuits-Saint-Georges</div>
+  </div>
+
+  <article class="domain-card featured" id="dubois">
+    <div class="featured-banner">⭐ Coup de cœur NSG</div>
+    <div class="card-label">
+      <div class="card-label-left">
+        <div class="card-region">Côte de Nuits · Nuits-Saint-Georges</div>
+        <h2 class="card-title">Domaine R. Dubois &amp; Fils</h2>
+      </div>
+      <div class="card-rating">
+        <div class="rating-stars">★★★★★</div>
+        <div class="rating-num">4.8 / 5 — 117 avis</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-row">
+          <div class="info-icon">📍</div>
+          <div class="info-content">
+            <label>Adresse</label>
+            <p>7 Route de Nuits-Saint-Georges, 21700 Prémeaux-Prissey, France</p>
+            <div class="link-row">
+              <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Domaine+R+Dubois+Fils+7+Route+Nuits-Saint-Georges+21700+Premeaux-Prissey" target="_blank" rel="noopener">Google Maps →</a>
+              <a class="maps-link" href="https://www.domaine-dubois.fr/" target="_blank" rel="noopener">Site du domaine →</a>
+            </div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍷</div>
+          <div class="info-content">
+            <label>Dégustation</label>
+            <p>Gratuite au caveau. Raphaël (vigneron) et Béatrice (œnologue), frère et sœur, accueillent les visiteurs avec passion et font découvrir leur gamme dans un échange convivial.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍇</div>
+          <div class="info-content">
+            <label>Visite</label>
+            <p>Visite du caveau et échange direct avec les propriétaires sur leur travail en vigne et en cave. Domaine certifié Agriculture Biologique à partir du millésime 2023.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🏞️</div>
+          <div class="info-content">
+            <label>Cadre</label>
+            <p>Domaine familial à la 9e génération, 22 hectares en Côte de Nuits et Côte de Beaune, à 5 minutes au sud de Nuits-Saint-Georges sur la route de Beaune. Ambiance authentique, loin des structures de négoce.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍽️</div>
+          <div class="info-content">
+            <label>Restauration à proximité</label>
+            <p class="muted">Prémeaux-Prissey est un village viticole sans restaurant — prévoir le repas à Nuits-Saint-Georges (5 min au nord) avant ou après la visite.</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="side-block">
+          <h4>Horaires</h4>
+          <table class="hours-table">
+            <tr><td>Mardi – Samedi</td><td>9h–11h30 · 14h–17h30</td></tr>
+            <tr><td>Dimanche</td><td>Sur rendez-vous uniquement</td></tr>
+            <tr><td>Lundi</td><td>Fermé</td></tr>
+          </table>
+          <p class="source-note">Le samedi 18 octobre est accessible sans RDV. Pour le dimanche 17, appeler à l'avance pour confirmer.</p>
+        </div>
+        <div class="side-block">
+          <h4>Gamme &amp; prix indicatifs</h4>
+          <ul class="wine-list">
+            <li><span class="wine-name">Bourgogne Aligoté / Chardonnay / Pinot Noir</span><span class="wine-price">~12–16 €</span></li>
+            <li><span class="wine-name">Hautes-Côtes de Nuits rouge / blanc</span><span class="wine-price">~16–22 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges village</span><span class="wine-price">~30–40 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges 1er Cru</span><span class="wine-price">~45–60 €</span></li>
+            <li><span class="wine-name">Savigny-lès-Beaune 1er Cru</span><span class="wine-price">~35–50 €</span></li>
+            <li><span class="wine-name">Clos de Vougeot Grand Cru</span><span class="wine-price">~90–120 €</span></li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Récoltant</span>
+            <span class="tag">9 générations</span>
+            <span class="tag">Bio 2023</span>
+            <span class="tag">23 appellations</span>
+            <span class="tag">Groupes 8 pers.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <div class="accordion-zone" id="acc-nsg">
+    <button class="accordion-btn" onclick="toggleAccordion('acc-nsg')" aria-expanded="false">
+      <span class="acc-label">Voir les autres domaines NSG</span>
+      <span class="acc-arrow">▼</span>
+    </button>
+    <div class="accordion-body" id="acc-nsg-body">
+      <article class="domain-card" id="gavignet">
     <div class="card-label">
       <div class="card-label-left">
         <div class="card-region">Côte de Nuits · Nuits-Saint-Georges</div>
@@ -563,9 +750,343 @@
       </div>
     </div>
   </article>
+      <article class="domain-card" id="moillard">
+    <div class="card-label">
+      <div class="card-label-left">
+        <div class="card-region">Côte de Nuits · Nuits-Saint-Georges</div>
+        <h2 class="card-title">Caveau Moillard</h2>
+      </div>
+      <div class="card-rating">
+        <div class="rating-stars">★★★★☆</div>
+        <div class="rating-num">4.6 / 5 — 712 avis Google</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-row">
+          <div class="info-icon">📍</div>
+          <div class="info-content">
+            <label>Adresse</label>
+            <p>2 Route de Dijon, 21700 Nuits-Saint-Georges, France</p>
+            <div class="link-row">
+              <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Caveau+Moillard+2+Route+de+Dijon+21700+Nuits-Saint-Georges" target="_blank" rel="noopener">Google Maps →</a>
+              <a class="maps-link" href="https://www.moillard.fr/fr/caveaux?id_caveau=3" target="_blank" rel="noopener">Site du caveau →</a>
+            </div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍷</div>
+          <div class="info-content">
+            <label>Dégustation</label>
+            <p>Visite du chai et de la cave gratuite. Dégustation commentée ensuite payante : formule Découverte (3 ou 5 vins) ou formule Prestige 6 vins avec un Grand Cru, autour de 25 € selon les avis clients.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍇</div>
+          <div class="info-content">
+            <label>Visite</label>
+            <p>Visite guidée d'environ une heure : cuverie où sont vinifiés les vins de la Côte de Nuits, puis cave voûtée du XIXe siècle. C'est une maison de négoce (pas un domaine cultivant ses propres vignes), donc visite très structurée et touristique.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🏞️</div>
+          <div class="info-content">
+            <label>Cadre</label>
+            <p>Caveau historique aux murs extérieurs décorés d'une frise en mosaïques représentant les paysages de vignes. Situé sur la route des vins, en entrée de Nuits-Saint-Georges. Capacité d'accueil de groupe confirmée par les avis (groupe de 6 mentionné).</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍽️</div>
+          <div class="info-content">
+            <label>Restauration à proximité</label>
+            <p class="muted">Nuits-Saint-Georges est à 2 minutes à pied : plusieurs restaurants en centre-ville, dont une ancienne maison de vigneron du XVIIIe avec salon à l'étage pour les groupes, ou des adresses plus simples type brasserie.</p>
+          </div>
+        </div>
+      </div>
 
-  <!-- ============ DOMAINE RAQUILLET ============ -->
-  <article class="domain-card" id="raquillet">
+      <div>
+        <div class="side-block">
+          <h4>Horaires</h4>
+          <table class="hours-table">
+            <tr><td>Mai – Septembre</td><td>Tous les jours 10h–19h</td></tr>
+            <tr><td>Octobre – Avril</td><td>Tous les jours 10h–18h</td></tr>
+          </table>
+          <p class="source-note">⚠️ Le site officiel indique 7j/7, mais Google Maps signale une fermeture le mercredi — à confirmer par téléphone avant de venir. Visites non garanties pendant les vendanges (mi-septembre à fin octobre).</p>
+        </div>
+
+        <div class="side-block">
+          <h4>Gamme & prix indicatifs</h4>
+          <ul class="wine-list">
+            <li><span class="wine-name">Bourgogne Hautes-Côtes de Nuits</span><span class="wine-price">~18–22 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges Les Argillats</span><span class="wine-price">~35–45 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges Vieilles Vignes</span><span class="wine-price">~45–55 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges 1er Cru Les Damodes</span><span class="wine-price">~60–80 €</span></li>
+            <li><span class="wine-name">Grand Cru (sélection Hospices)</span><span class="wine-price">100 €+</span></li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Maison de négoce 1850</span>
+            <span class="tag">50+ appellations</span>
+            <span class="tag">Capacité 8 pers.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+      <article class="domain-card" id="gros-fils">
+    <div class="card-label">
+      <div class="card-label-left">
+        <div class="card-region">Côte de Nuits · Nuits-Saint-Georges</div>
+        <h2 class="card-title">Domaine Gros Ch. &amp; Fils</h2>
+      </div>
+      <div class="card-rating">
+        <div class="rating-stars">★★★★★</div>
+        <div class="rating-num">4.9 / 5 — 61 avis</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-row">
+          <div class="info-icon">📍</div>
+          <div class="info-content">
+            <label>Adresse</label>
+            <p>3 Rue de la Chaume, 21700 Prémeaux-Prissey, France</p>
+            <div class="link-row">
+              <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Domaine+Gros+Ch+Fils+3+Rue+de+la+Chaume+21700+Premeaux-Prissey" target="_blank" rel="noopener">Google Maps →</a>
+              <a class="maps-link" href="https://www.ruedesvignerons.com/fr/domaine/1241/domaine-gros-ch-fils" target="_blank" rel="noopener">Réserver →</a>
+            </div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍷</div>
+          <div class="info-content">
+            <label>Dégustation</label>
+            <p>Dégustation commentée sur réservation à partir de 15 €/pers. Formule régionale + village + 1er Cru, ou formule avec Grand Cru. Dégustation à l'aveugle également proposée.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍇</div>
+          <div class="info-content">
+            <label>Visite</label>
+            <p>Visite de la cave avec Julien ou Nicolas, les deux fils de Christian Gros à la tête du domaine depuis 2018. Julien a vinifié au Château de Beaucastel (Châteauneuf-du-Pape) — échanges techniques de qualité.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🏞️</div>
+          <div class="info-content">
+            <label>Cadre</label>
+            <p>Domaine à la 10e génération, né de l'union des familles Gros (Ladoix-Serrigny) et Faiveley (Prémeaux-Prissey), toutes deux vigneronnes depuis les années 1700. 11,5 hectares de NSG à Aloxe-Corton. Accueil jusqu'à 15 personnes.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍽️</div>
+          <div class="info-content">
+            <label>Restauration à proximité</label>
+            <p class="muted">Même situation que le Domaine Dubois — Prémeaux-Prissey est un village viticole, compter 5 min pour rejoindre les restaurants de Nuits-Saint-Georges.</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="side-block">
+          <h4>Horaires</h4>
+          <table class="hours-table">
+            <tr><td>Lundi – Samedi</td><td>9h–19h</td></tr>
+            <tr><td>Dimanche</td><td>Sur réservation</td></tr>
+          </table>
+          <p class="source-note">Réservation recommandée pour un groupe de 7-8 pers. Via Rue des Vignerons ou directement par téléphone.</p>
+        </div>
+        <div class="side-block">
+          <h4>Gamme &amp; prix indicatifs</h4>
+          <ul class="wine-list">
+            <li><span class="wine-name">Bourgogne / Côte de Nuits-Villages</span><span class="wine-price">~15–25 €</span></li>
+            <li><span class="wine-name">Ladoix rouge / blanc</span><span class="wine-price">~20–28 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges village</span><span class="wine-price">~35–45 €</span></li>
+            <li><span class="wine-name">Aloxe-Corton village</span><span class="wine-price">~30–40 €</span></li>
+            <li><span class="wine-name">Savigny-lès-Beaune 1er Cru</span><span class="wine-price">~35–50 €</span></li>
+            <li><span class="wine-name">Corton Grand Cru</span><span class="wine-price">~80–110 €</span></li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Récoltant</span>
+            <span class="tag">10 générations</span>
+            <span class="tag">Groupes 15 pers.</span>
+            <span class="tag">Note 4.9</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+      <article class="domain-card" id="boisset">
+    <div class="card-label">
+      <div class="card-label-left">
+        <div class="card-region">Côte de Nuits · Nuits-Saint-Georges</div>
+        <h2 class="card-title">Maison Jean-Claude Boisset</h2>
+      </div>
+      <div class="card-rating">
+        <div class="rating-stars">★★★★★</div>
+        <div class="rating-num">4.8 / 5 — 49 avis</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-row">
+          <div class="info-icon">📍</div>
+          <div class="info-content">
+            <label>Adresse</label>
+            <p>5 Chemin des Plateaux, 21700 Nuits-Saint-Georges, France</p>
+            <div class="link-row">
+              <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Maison+Jean-Claude+Boisset+5+Chemin+des+Plateaux+21700+Nuits-Saint-Georges" target="_blank" rel="noopener">Google Maps →</a>
+              <a class="maps-link" href="https://www.jeanclaudeboisset.com/fr/visites-et-degustations.r-595/" target="_blank" rel="noopener">Site du domaine →</a>
+            </div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍷</div>
+          <div class="info-content">
+            <label>Dégustation</label>
+            <p>Trois formules sur réservation : "Jardin des Ursulines" (4 vins, 15 €, 30 min) ; visite + 5 vins dont 1 Premier Cru (25 €, 1h) ; formule prestige + 6 vins dont 2 Premiers Crus et 1 vin sur fût (dès 35 €, 1h30). Lauréat 2025 des trophées de l'œnotourisme.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍇</div>
+          <div class="info-content">
+            <label>Visite</label>
+            <p>Visite du cloître rénové et son jardin, film sur l'histoire des vins de Bourgogne, puis cuverie bioclimatique et caves d'élevage XVIIe siècle. Le lieu architectural est un argument de visite à lui seul — dôme végétalisé remarquable.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🏞️</div>
+          <div class="info-content">
+            <label>Cadre</label>
+            <p>Maison de négoce fondée en 1961, installée depuis 2018 dans les Ursulines, ancien couvent du XVIIe reconverti en cuverie bioclimatique. Lieu spectaculaire en entrée de ville, à 10 min à pied du centre de Nuits-Saint-Georges. Max 12 personnes par créneau.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍽️</div>
+          <div class="info-content">
+            <label>Restauration à proximité</label>
+            <p class="muted">À 10 min à pied du centre de Nuits-Saint-Georges et de ses restaurants — idéal pour enchaîner visite et repas dans la même demi-journée.</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="side-block">
+          <h4>Horaires</h4>
+          <table class="hours-table">
+            <tr><td>Lun – Vendredi</td><td>9h–12h · 14h–17h</td></tr>
+            <tr><td>Samedi (haute saison)</td><td>9h–12h · 14h–17h</td></tr>
+            <tr><td>Dimanche</td><td>Fermé</td></tr>
+          </table>
+          <p class="source-note">Octobre = haute saison : le samedi 18 est ouvert. Réservation obligatoire — confirmation instantanée sur Rue des Vignerons ou le site officiel.</p>
+        </div>
+        <div class="side-block">
+          <h4>Gamme &amp; prix indicatifs</h4>
+          <ul class="wine-list">
+            <li><span class="wine-name">Bourgogne Pinot Noir / Chardonnay</span><span class="wine-price">~15–20 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges village</span><span class="wine-price">~35–50 €</span></li>
+            <li><span class="wine-name">NSG 1er Cru Le Clos des Argillères</span><span class="wine-price">~60–80 €</span></li>
+            <li><span class="wine-name">Chambolle-Musigny / Gevrey-Chambertin</span><span class="wine-price">~40–55 €</span></li>
+            <li><span class="wine-name">Chambolle-Musigny 1er Cru</span><span class="wine-price">~70–90 €</span></li>
+            <li><span class="wine-name">Clos de Vougeot Grand Cru</span><span class="wine-price">~120–160 €</span></li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Négoce</span>
+            <span class="tag">Depuis 1961</span>
+            <span class="tag">Visite architecturale</span>
+            <span class="tag">Trophée œnotourisme 2025</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+      <article class="domain-card" id="montmain">
+    <div class="card-label">
+      <div class="card-label-left">
+        <div class="card-region">Côte de Nuits · Hautes-Côtes de Nuits</div>
+        <h2 class="card-title">Domaine de Montmain</h2>
+      </div>
+      <div class="card-rating">
+        <div class="rating-stars">★★★★★</div>
+        <div class="rating-num">4.8 / 5 — 323 avis</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-row">
+          <div class="info-icon">📍</div>
+          <div class="info-content">
+            <label>Adresse</label>
+            <p>Villars-Fontaine, 21700 Côte-d'Or, France (Hautes-Côtes de Nuits)</p>
+            <div class="link-row">
+              <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Domaine+de+Montmain+Villars-Fontaine+21700" target="_blank" rel="noopener">Google Maps →</a>
+              <a class="maps-link" href="https://www.ruedesvignerons.com/fr/domaine/180/domaine-de-montmain" target="_blank" rel="noopener">Réserver →</a>
+            </div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍷</div>
+          <div class="info-content">
+            <label>Dégustation</label>
+            <p>Dégustation dans une ambiance familiale, à partir de 10 €/pers. Spécialité rare : une collection d'anciens millésimes proposés à la dégustation — permet de comparer l'évolution des vins dans le temps.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍇</div>
+          <div class="info-content">
+            <label>Visite</label>
+            <p>Visite guidée des caves et du vignoble dans les hauteurs de la Côte de Nuits, avec des panoramas dégagés sur la plaine de la Saône. Un des rares domaines des Hautes-Côtes à accueillir les groupes.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🏞️</div>
+          <div class="info-content">
+            <label>Cadre</label>
+            <p>En retrait de la côte principale, sur les plateaux dominant Nuits-Saint-Georges. Cadre rustique et panoramique, plus calme que les domaines du village — vins plus frais et plus abordables que les appellations communales.</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🍽️</div>
+          <div class="info-content">
+            <label>Restauration à proximité</label>
+            <p class="muted">Villars-Fontaine est un hameau isolé sur les hauteurs — prévoir le repas à Nuits-Saint-Georges (10-15 min en voiture), avant ou après la visite.</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="side-block">
+          <h4>Horaires</h4>
+          <table class="hours-table">
+            <tr><td>7 jours / 7</td><td>Sur réservation</td></tr>
+          </table>
+          <p class="source-note">Ouvert le weekend sur réservation, idéal pour un groupe. Réservation via Rue des Vignerons (confirmation instantanée). 323 avis — le domaine le plus populaire de la zone.</p>
+        </div>
+        <div class="side-block">
+          <h4>Gamme &amp; prix indicatifs</h4>
+          <ul class="wine-list">
+            <li><span class="wine-name">Bourgogne Aligoté / Côte d'Or</span><span class="wine-price">~12–18 €</span></li>
+            <li><span class="wine-name">Hautes-Côtes de Nuits rouge</span><span class="wine-price">~15–22 €</span></li>
+            <li><span class="wine-name">Hautes-Côtes de Nuits blanc</span><span class="wine-price">~15–22 €</span></li>
+            <li><span class="wine-name">Nuits-Saint-Georges (selon millésime)</span><span class="wine-price">~35–50 €</span></li>
+            <li><span class="wine-name">Anciens millésimes (collection)</span><span class="wine-price">variable</span></li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Récoltant</span>
+            <span class="tag">Collection anciens millésimes</span>
+            <span class="tag">Groupes acceptés</span>
+            <span class="tag">Dès 10 €</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+    </div>
+  </div>
+
+  <!-- ===== ZONE MERCUREY ===== -->
+  <div class="zone-header">
+    <div class="zone-badge zone-chalon">Côte Chalonnaise · Mercurey</div>
+  </div>
+
+  <article class="domain-card featured" id="raquillet">
+    <div class="featured-banner">⭐ Coup de cœur Mercurey</div>
     <div class="card-label">
       <div class="card-label-left">
         <div class="card-region">Côte Chalonnaise · Mercurey</div>
@@ -650,8 +1171,13 @@
     </div>
   </article>
 
-  <!-- ============ CAVEAU DIVIN ============ -->
-  <article class="domain-card" id="caveau-divin">
+  <div class="accordion-zone" id="acc-mercurey">
+    <button class="accordion-btn" onclick="toggleAccordion('acc-mercurey')" aria-expanded="false">
+      <span class="acc-label">Voir les autres domaines Mercurey</span>
+      <span class="acc-arrow">▼</span>
+    </button>
+    <div class="accordion-body" id="acc-mercurey-body">
+      <article class="domain-card" id="caveau-divin">
     <div class="card-label">
       <div class="card-label-left">
         <div class="card-region">Côte Chalonnaise · Mercurey</div>
@@ -731,9 +1257,7 @@
       </div>
     </div>
   </article>
-
-  <!-- ============ CHATEAU DE CHAMIREY ============ -->
-  <article class="domain-card" id="chamirey">
+      <article class="domain-card" id="chamirey">
     <div class="card-label">
       <div class="card-label-left">
         <div class="card-region">Côte Chalonnaise · Mercurey</div>
@@ -815,94 +1339,10 @@
       </div>
     </div>
   </article>
-
-  <!-- ============ CAVEAU MOILLARD ============ -->
-  <article class="domain-card" id="moillard">
-    <div class="card-label">
-      <div class="card-label-left">
-        <div class="card-region">Côte de Nuits · Nuits-Saint-Georges</div>
-        <h2 class="card-title">Caveau Moillard</h2>
-      </div>
-      <div class="card-rating">
-        <div class="rating-stars">★★★★☆</div>
-        <div class="rating-num">4.6 / 5 — 712 avis Google</div>
-      </div>
     </div>
-    <div class="card-body">
-      <div class="info-grid">
-        <div class="info-row">
-          <div class="info-icon">📍</div>
-          <div class="info-content">
-            <label>Adresse</label>
-            <p>2 Route de Dijon, 21700 Nuits-Saint-Georges, France</p>
-            <div class="link-row">
-              <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=Caveau+Moillard+2+Route+de+Dijon+21700+Nuits-Saint-Georges" target="_blank" rel="noopener">Google Maps →</a>
-              <a class="maps-link" href="https://www.moillard.fr/fr/caveaux?id_caveau=3" target="_blank" rel="noopener">Site du caveau →</a>
-            </div>
-          </div>
-        </div>
-        <div class="info-row">
-          <div class="info-icon">🍷</div>
-          <div class="info-content">
-            <label>Dégustation</label>
-            <p>Visite du chai et de la cave gratuite. Dégustation commentée ensuite payante : formule Découverte (3 ou 5 vins) ou formule Prestige 6 vins avec un Grand Cru, autour de 25 € selon les avis clients.</p>
-          </div>
-        </div>
-        <div class="info-row">
-          <div class="info-icon">🍇</div>
-          <div class="info-content">
-            <label>Visite</label>
-            <p>Visite guidée d'environ une heure : cuverie où sont vinifiés les vins de la Côte de Nuits, puis cave voûtée du XIXe siècle. C'est une maison de négoce (pas un domaine cultivant ses propres vignes), donc visite très structurée et touristique.</p>
-          </div>
-        </div>
-        <div class="info-row">
-          <div class="info-icon">🏞️</div>
-          <div class="info-content">
-            <label>Cadre</label>
-            <p>Caveau historique aux murs extérieurs décorés d'une frise en mosaïques représentant les paysages de vignes. Situé sur la route des vins, en entrée de Nuits-Saint-Georges. Capacité d'accueil de groupe confirmée par les avis (groupe de 6 mentionné).</p>
-          </div>
-        </div>
-        <div class="info-row">
-          <div class="info-icon">🍽️</div>
-          <div class="info-content">
-            <label>Restauration à proximité</label>
-            <p class="muted">Nuits-Saint-Georges est à 2 minutes à pied : plusieurs restaurants en centre-ville, dont une ancienne maison de vigneron du XVIIIe avec salon à l'étage pour les groupes, ou des adresses plus simples type brasserie.</p>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div class="side-block">
-          <h4>Horaires</h4>
-          <table class="hours-table">
-            <tr><td>Mai – Septembre</td><td>Tous les jours 10h–19h</td></tr>
-            <tr><td>Octobre – Avril</td><td>Tous les jours 10h–18h</td></tr>
-          </table>
-          <p class="source-note">⚠️ Le site officiel indique 7j/7, mais Google Maps signale une fermeture le mercredi — à confirmer par téléphone avant de venir. Visites non garanties pendant les vendanges (mi-septembre à fin octobre).</p>
-        </div>
-
-        <div class="side-block">
-          <h4>Gamme & prix indicatifs</h4>
-          <ul class="wine-list">
-            <li><span class="wine-name">Bourgogne Hautes-Côtes de Nuits</span><span class="wine-price">~18–22 €</span></li>
-            <li><span class="wine-name">Nuits-Saint-Georges Les Argillats</span><span class="wine-price">~35–45 €</span></li>
-            <li><span class="wine-name">Nuits-Saint-Georges Vieilles Vignes</span><span class="wine-price">~45–55 €</span></li>
-            <li><span class="wine-name">Nuits-Saint-Georges 1er Cru Les Damodes</span><span class="wine-price">~60–80 €</span></li>
-            <li><span class="wine-name">Grand Cru (sélection Hospices)</span><span class="wine-price">100 €+</span></li>
-          </ul>
-          <div class="tag-row">
-            <span class="tag">Maison de négoce 1850</span>
-            <span class="tag">50+ appellations</span>
-            <span class="tag">Capacité 8 pers.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </article>
+  </div>
 
 </section>
-
-<footer>
   Route des vins · Bourgogne (Côte de Nuits & Côte Chalonnaise) — informations vérifiées à titre indicatif (horaires et tarifs susceptibles de changer, réservation conseillée).
 </footer>
 
@@ -910,10 +1350,27 @@
 <script>
   const domaines = [
     {
+      name: "Domaine R. Dubois & Fils",
+      region: "Côte de Nuits",
+      lat: 47.0988, lng: 4.9535,
+      color: "#5b0e20",
+      featured: true,
+      anchor: "dubois"
+    },
+    {
+      name: "Domaine François Raquillet",
+      region: "Côte Chalonnaise",
+      lat: 46.8394577, lng: 4.7203516,
+      color: "#2d3d20",
+      featured: true,
+      anchor: "raquillet"
+    },
+    {
       name: "Domaine Philippe Gavignet",
       region: "Côte de Nuits",
       lat: 47.1333880, lng: 4.9520830,
       color: "#7a2538",
+      featured: false,
       anchor: "gavignet"
     },
     {
@@ -921,20 +1378,15 @@
       region: "Côte de Nuits",
       lat: 47.1394064, lng: 4.9515767,
       color: "#7a2538",
+      featured: false,
       anchor: "moillard"
-    },
-    {
-      name: "Domaine François Raquillet",
-      region: "Côte Chalonnaise",
-      lat: 46.8394577, lng: 4.7203516,
-      color: "#4c5d3a",
-      anchor: "raquillet"
     },
     {
       name: "Caveau Divin",
       region: "Côte Chalonnaise",
       lat: 46.8362789, lng: 4.7167749,
       color: "#4c5d3a",
+      featured: false,
       anchor: "caveau-divin"
     },
     {
@@ -942,7 +1394,32 @@
       region: "Côte Chalonnaise",
       lat: 46.8248564, lng: 4.7235317,
       color: "#4c5d3a",
+      featured: false,
       anchor: "chamirey"
+    },
+    {
+      name: "Domaine Gros Ch. & Fils",
+      region: "Côte de Nuits",
+      lat: 47.0972, lng: 4.9521,
+      color: "#7a2538",
+      featured: false,
+      anchor: "gros-fils"
+    },
+    {
+      name: "Maison Jean-Claude Boisset",
+      region: "Côte de Nuits",
+      lat: 47.1358, lng: 4.9444,
+      color: "#7a2538",
+      featured: false,
+      anchor: "boisset"
+    },
+    {
+      name: "Domaine de Montmain",
+      region: "Côte de Nuits",
+      lat: 47.1526, lng: 4.8961,
+      color: "#7a2538",
+      featured: false,
+      anchor: "montmain"
     }
   ];
 
@@ -1014,16 +1491,28 @@
   buildRegionPolygons();
 
   domaines.forEach(d => {
+    const size   = d.featured ? 24 : 14;
+    const border = d.featured ? 3  : 2;
+    const shadow = d.featured
+      ? '0 2px 10px rgba(0,0,0,0.45), 0 0 0 2px #fff'
+      : '0 1px 4px rgba(0,0,0,0.25)';
+    const opacity = d.featured ? '1' : '0.55';
+    const star = d.featured
+      ? `<div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:10px;line-height:1;">⭐</div>`
+      : '';
     const icon = L.divIcon({
       className: '',
-      html: `<div style="width:18px;height:18px;border-radius:50%;background:${d.color};border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>`,
-      iconSize: [18, 18],
-      iconAnchor: [9, 9]
+      html: `<div style="position:relative;width:${size}px;height:${size}px;border-radius:50%;background:${d.color};border:${border}px solid #fff;box-shadow:${shadow};opacity:${opacity};">${star}</div>`,
+      iconSize: [size, size],
+      iconAnchor: [size/2, size/2]
     });
 
-    const marker = L.marker([d.lat, d.lng], { icon, zIndexOffset: 1000 }).addTo(map);
+    const marker = L.marker([d.lat, d.lng], {
+      icon,
+      zIndexOffset: d.featured ? 2000 : 1000
+    }).addTo(map);
     marker.bindPopup(`
-      <div class="popup-region">${d.region}</div>
+      <div class="popup-region">${d.region}${d.featured ? ' · <b>⭐ Coup de cœur</b>' : ''}</div>
       <div class="popup-title">${d.name}</div>
       <a href="#${d.anchor}" style="font-size:0.8rem;color:#5b1a2b;">Voir la fiche complète ↓</a>
     `);
@@ -1031,6 +1520,15 @@
   });
 
   map.fitBounds(bounds, { padding: [30, 30] });
+
+  // --- Accordéons ---
+  function toggleAccordion(id) {
+    const btn  = document.querySelector(`#${id} .accordion-btn`);
+    const body = document.getElementById(`${id}-body`);
+    const open = body.classList.contains('is-open');
+    body.classList.toggle('is-open', !open);
+    btn.setAttribute('aria-expanded', String(!open));
+  }
 
   // --- Interactivité légende <-> carte : survol (desktop) et clic (mobile) ---
   const legendButtons = document.querySelectorAll('.region-pill');
