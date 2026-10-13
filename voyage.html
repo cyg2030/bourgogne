@@ -34,7 +34,6 @@ body { font-family:Arial,sans-serif; background:#3c0f1c; }
 .popup-title { font-size:14px; font-weight:700; margin-bottom:3px; color:#3c0f1c; }
 .popup-addr { font-size:11.5px; color:#555; line-height:1.5; }
 .popup-link { display:inline-block; margin-top:6px; font-size:11.5px; color:#5b1a2b; }
-.region-tooltip-hover { font-weight:600; }
 .pin { display:flex; align-items:center; justify-content:center; border-radius:50%; border:2px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.45); font-size:15px; }
 .pin { position:relative; }
 .ordre { position:absolute; top:-9px; right:-9px; min-width:20px; height:20px; padding:0 5px; border-radius:10px; background:#b8923f; color:#fff; border:2px solid #fff; font:700 12px/16px Arial,sans-serif; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,.5); }
@@ -106,9 +105,11 @@ const byRegion = {};
 COMMUNES_DATA.features.forEach(f => (byRegion[f.properties.region] = byRegion[f.properties.region] || []).push(f));
 Object.keys(byRegion).forEach(region => {
   const color = REGION_COLORS[region] || '#999';
+  // interactive:false : contours purement décoratifs (ni clic, ni cadre de focus)
   L.geoJSON({ type:'FeatureCollection', features:byRegion[region] }, {
+    interactive:false,
     style:{ color, weight:0.6, opacity:0.45, fillColor:color, fillOpacity:0.28 }
-  }).bindTooltip(region, { sticky:true, className:'region-tooltip-hover', opacity:0.95 }).addTo(layers.regions);
+  }).addTo(layers.regions);
 });
 
 function pinIcon(c, home, ordre){
