@@ -127,12 +127,12 @@ function pinIcon(c, home){
 const bounds = [];
 LIEUX.forEach(l => {
   const c = CATS[l.cat];
-  const gmaps = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(l.name + ', ' + l.addr);
+  const gmaps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(l.name + ', ' + l.addr);
   L.marker(l.ll, { icon:pinIcon(c, l.cat==='maison'), zIndexOffset:1000, title:l.name })
     .bindPopup(`<span class="popup-kind" style="background:${c.color}">${c.emoji} ${c.label}</span>
       <div class="popup-title">${l.name}</div>
       <div class="popup-addr">${l.addr}</div>
-      <a class="popup-link" href="${gmaps}" target="_blank" rel="noopener">Itinéraire ↗</a>`)
+      <a class="popup-link" href="${gmaps}" target="_blank" rel="noopener">Voir sur Google Maps ↗</a>`)
     .addTo(layers[l.cat]);
   bounds.push(l.ll);
 });
