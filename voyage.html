@@ -36,6 +36,9 @@ body { font-family:Arial,sans-serif; background:#3c0f1c; }
 .popup-link { display:inline-block; margin-top:6px; font-size:11.5px; color:#5b1a2b; }
 .region-tooltip-hover { font-weight:600; }
 .pin { display:flex; align-items:center; justify-content:center; border-radius:50%; border:2px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.45); font-size:15px; }
+.pin { position:relative; }
+.ordre { position:absolute; top:-9px; right:-9px; min-width:20px; height:20px; padding:0 5px; border-radius:10px; background:#b8923f; color:#fff; border:2px solid #fff; font:700 12px/16px Arial,sans-serif; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,.5); }
+.popup-rdv { margin-top:6px; padding:5px 8px; background:#f8f1e0; border-left:3px solid #b8923f; border-radius:0 4px 4px 0; font-size:12px; color:#3c0f1c; line-height:1.4; }
 .pin.home { border-radius:8px; }
 </style>
 </head>
@@ -68,11 +71,11 @@ const CATS = {
   visites:     { label:'Visite',     emoji:'🏛️', color:'#4c5d3a' }
 };
 const LIEUX = [
-  { cat:'vignobles', name:'Domaine Dubois', addr:'7 route de Nuits-Saint-Georges, Premeaux-Prissey', ll:[47.1137,4.9420] },
-  { cat:'vignobles', name:'Domaine Isabelle Lippe', addr:'1 rue de Fontenotte, 21220 Brochon', ll:[47.2403,4.9711] },
-  { cat:'vignobles', name:'Caveau Auxey', addr:'1 rue du Dessous, Auxey-Duresses', ll:[46.9863,4.7469] },
-  { cat:'vignobles', name:'Domaine Bernard Delagrange', addr:'10 rue du 11 novembre, Meursault', ll:[46.9812,4.7701] },
-  { cat:'vignobles', name:'Domaine Raquillet', addr:'17 rue de Jamproyes, Mercurey', ll:[46.8394,4.7209] },
+  { cat:'vignobles', name:'Domaine Dubois', ordre:1, jour:'Samedi 17 octobre', heure:'14h – 16h', addr:'7 route de Nuits-Saint-Georges, Premeaux-Prissey', ll:[47.1137,4.9420] },
+  { cat:'vignobles', name:'Domaine Isabelle Lippe', ordre:2, jour:'Samedi 17 octobre', heure:'17h – 18h', addr:'1 rue de Fontenotte, 21220 Brochon', ll:[47.2403,4.9711] },
+  { cat:'vignobles', name:'Caveau Auxey', ordre:3, jour:'Dimanche 18 octobre', heure:'11h30', addr:'1 rue du Dessous, Auxey-Duresses', ll:[46.9863,4.7469] },
+  { cat:'vignobles', name:'Domaine Bernard Delagrange', ordre:4, jour:'Dimanche 18 octobre', heure:'16h – 18h', addr:'10 rue du 11 novembre, Meursault', ll:[46.9812,4.7701] },
+  { cat:'vignobles', name:'Domaine Raquillet', ordre:5, jour:'Lundi 19 octobre', heure:'10h30', addr:'17 rue de Jamproyes, Mercurey', ll:[46.8394,4.7209] },
   { cat:'restaurants', name:'Chez Georges', addr:'7 rue Saint-Joseph, Nuits-Saint-Georges', ll:[47.1340,4.9646] },
   { cat:'restaurants', name:'La Régalade', addr:'35 avenue du 8 septembre 1944, Beaune', ll:[47.0232,4.8479] },
   { cat:'maison', name:'Notre maison', addr:'26 avenue de la Sablière, Beaune', ll:[47.0367,4.8432] },
@@ -108,22 +111,24 @@ Object.keys(byRegion).forEach(region => {
   }).bindTooltip(region, { sticky:true, className:'region-tooltip-hover', opacity:0.95 }).addTo(layers.regions);
 });
 
-function pinIcon(c, home){
+function pinIcon(c, home, ordre){
   const s = home ? 34 : 30;
   return L.divIcon({
     className:'',
-    html:`<div class="pin ${home?'home':''}" style="width:${s}px;height:${s}px;background:${c.color}">${c.emoji}</div>`,
+    html:`<div class="pin ${home?'home':''}" style="width:${s}px;height:${s}px;background:${c.color}">${c.emoji}${ordre ? `<span class="ordre">${ordre}</span>` : ''}</div>`,
     iconSize:[s,s], iconAnchor:[s/2,s/2], popupAnchor:[0,-s/2]
   });
 }
 const bounds = [];
+const nbEtapes = LIEUX.filter(l => l.ordre).length;
 LIEUX.forEach(l => {
   const c = CATS[l.cat];
   const gmaps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(l.name + ', ' + l.addr);
-  L.marker(l.ll, { icon:pinIcon(c, l.cat==='maison'), zIndexOffset:1000, title:l.name })
+  L.marker(l.ll, { icon:pinIcon(c, l.cat==='maison', l.ordre), zIndexOffset:1000, title:l.name })
     .bindPopup(`<span class="popup-kind" style="background:${c.color}">${c.emoji} ${c.label}</span>
       <div class="popup-title">${l.name}</div>
       <div class="popup-addr">${l.addr}</div>
+      ${l.ordre ? `<div class="popup-rdv"><b>Étape ${l.ordre} sur ${nbEtapes}</b><br>${l.jour} · ${l.heure}</div>` : ''}
       <a class="popup-link" href="${gmaps}" target="_blank" rel="noopener">Voir sur Google Maps ↗</a>`)
     .addTo(layers[l.cat]);
   bounds.push(l.ll);
