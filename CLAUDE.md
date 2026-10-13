@@ -20,11 +20,14 @@ Deux pages HTML statiques (Leaflet, pas de framework, pas de build) pour un voya
 
 - Les lieux sont dans le tableau `LIEUX` (`cat`, `name`, `addr`, `ll` = `[lat, lon]`), les catégories dans `CATS` (libellé, émoji, couleur). Ajouter un lieu = une ligne ; une nouvelle catégorie = une entrée dans `CATS`, une couche dans `layers`/`layerState` et un bouton `btn-<nom>` dans le menu.
 - Filtres : vignobles, maison et régions affichés par défaut ; restaurants et visites masqués (`DEFAULT_ON`).
+- Mise en page : pas de bandeau d'en-tête ; la carte (`#wrap`) est en `position:fixed` plein viewport (évite la bande vide de `100vh`/`100dvh` sur Safari), recadrée par `refit()` au chargement, à la rotation et au redimensionnement. Retour au menu via le bouton flottant `#back`.
+- Popups : lien « Voir sur Google Maps » en mode recherche de lieu (`maps/search/?api=1&query=`), volontairement pas en mode itinéraire.
 - Coordonnées géocodées avec Nominatim (OpenStreetMap), précision de la rue. « Leclerc » = supermarché E.Leclerc, avenue du Bataillon de la Garde (à confirmer avec l'utilisateur).
 - `COMMUNES_DATA` (contours des régions) est dupliqué depuis `preparation.html` : en cas de correction, la reporter dans les deux pages. Source : aires AOC de l'INAO (data.gouv.fr) croisées avec les contours communaux IGN/INSEE (`gregoiredavid/france-geojson`).
 
 ## Commandes
 
+- Identité git (globale sur la machine de l'utilisateur) : `cyg2030`. Les commits publics exposent donc l'e-mail configuré.
 - Test local : `python3 -m http.server 8000`, puis `http://localhost:8000/voyage.html`.
 - Déploiement : `git push origin main` (GitHub Pages sert la racine de `main`).
 - Pas de tests automatisés : vérifier dans un navigateur (ou Chromium headless) que les filtres ajoutent/retirent bien les couches.
