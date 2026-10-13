@@ -10,10 +10,8 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:Arial,sans-serif; height:100vh; height:100dvh; display:flex; flex-direction:column; background:#3c0f1c; }
-header { padding:10px 16px; background:#3c0f1c; color:#f3ece1; border-bottom:2px solid #b8923f; display:flex; align-items:center; gap:12px; flex-shrink:0; }
-h1 { font-size:14px; font-weight:600; }
-.sub { font-size:10px; color:#d9c08a; margin-top:2px; }
-header a { margin-left:auto; color:#d9c08a; font-size:11px; text-decoration:none; border:1px solid rgba(217,192,138,.4); padding:4px 10px; border-radius:100px; white-space:nowrap; }
+#back { position:absolute; top:90px; left:10px; z-index:1000; background:rgba(40,14,22,0.92); color:#f3ece1; border:2px solid #5a2a38; border-radius:12px; padding:8px 12px; font-size:12px; text-decoration:none; box-shadow:0 2px 10px rgba(0,0,0,0.5); }
+#back:hover { border-color:#b8923f; }
 #wrap { position:relative; flex:1; min-height:0; }
 #map { position:absolute; inset:0; }
 #controls { position:absolute; top:10px; right:10px; z-index:1000; display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
@@ -41,16 +39,9 @@ header a { margin-left:auto; color:#d9c08a; font-size:11px; text-decoration:none
 </style>
 </head>
 <body>
-<header>
-  <span style="font-size:20px">🍷</span>
-  <div>
-    <h1>Bourgogne — Le voyage</h1>
-    <div class="sub">Vignobles, tables et visites autour de Beaune</div>
-  </div>
-  <a href="index.html">← Menu</a>
-</header>
 <div id="wrap">
 <div id="map"></div>
+<a id="back" href="index.html" aria-label="Retour au menu">← Menu</a>
 <div id="controls">
   <div class="ctrl-group">
     <button class="grp-btn" id="grpbtn-filtres" onclick="toggleGroup('filtres')" aria-label="Filtres">🗺️</button>
