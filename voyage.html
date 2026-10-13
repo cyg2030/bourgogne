@@ -9,10 +9,11 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:Arial,sans-serif; height:100vh; height:100dvh; display:flex; flex-direction:column; background:#3c0f1c; }
+html, body { height:100%; }
+body { font-family:Arial,sans-serif; background:#3c0f1c; }
 #back { position:absolute; top:90px; left:10px; z-index:1000; background:rgba(40,14,22,0.92); color:#f3ece1; border:2px solid #5a2a38; border-radius:12px; padding:8px 12px; font-size:12px; text-decoration:none; box-shadow:0 2px 10px rgba(0,0,0,0.5); }
 #back:hover { border-color:#b8923f; }
-#wrap { position:relative; flex:1; min-height:0; }
+#wrap { position:fixed; top:0; right:0; bottom:0; left:0; }
 #map { position:absolute; inset:0; }
 #controls { position:absolute; top:10px; right:10px; z-index:1000; display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
 .ctrl-group { display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
@@ -128,6 +129,11 @@ LIEUX.forEach(l => {
   bounds.push(l.ll);
 });
 map.fitBounds(bounds, { padding:[50,50] });
+// recalcule la taille et recadre une fois la mise en page stabilisée (barres du navigateur mobile, rotation)
+function refit(){ map.invalidateSize(); map.fitBounds(bounds, { padding:[50,50] }); }
+window.addEventListener('load', refit);
+window.addEventListener('orientationchange', () => setTimeout(refit, 300));
+window.addEventListener('resize', () => map.invalidateSize());
 
 // ── UI ──
 function syncSubBtn(id, on){ document.getElementById(id).classList.toggle('active', on); }
