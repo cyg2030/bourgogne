@@ -44,7 +44,7 @@ body { font-family:Arial,sans-serif; background:#3c0f1c; }
 .photo-badge { position:absolute; left:6px; bottom:6px; background:rgba(0,0,0,.6); color:#fff; font-size:11px; padding:1px 6px; border-radius:8px; }
 .photo-nav { position:absolute; top:50%; transform:translateY(-50%); width:30px; height:40px; border:none; background:rgba(0,0,0,.45); color:#fff; font-size:22px; cursor:pointer; }
 .photo-nav.prev { left:0; border-radius:0 6px 6px 0; } .photo-nav.next { right:0; border-radius:6px 0 0 6px; }
-.dot { display:inline-block; width:14px; height:14px; border-radius:50%; vertical-align:middle; }
+.dot { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; color:#fff; font:700 11px Arial; }
 .pin-photo { display:flex; align-items:center; justify-content:center; border-radius:50%; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.45); font-size:11px; }
 </style>
 </head>
@@ -65,15 +65,18 @@ body { font-family:Arial,sans-serif; background:#3c0f1c; }
     </div>
   </div>
   <div class="ctrl-group">
-    <button class="grp-btn" id="grpbtn-trace" onclick="toggleGroup('trace')" aria-label="Tracé et photos">📸</button>
-    <div class="grp-menu" id="grpmenu-trace">
-      <div class="sub-label">Jour</div>
-      <div id="menu-jours"></div>
-      <div class="sub-sep"></div>
-      <div class="sub-label">Afficher</div>
-      <button class="sub-btn" id="btn-t-trace" onclick="toggleType('trace')"><span class="icon">🛣️</span><span class="label">Tracé (trait plein : voiture, pointillés : à pied)</span><span class="check"></span></button>
-      <button class="sub-btn" id="btn-t-photos" onclick="toggleType('photos')"><span class="icon">📸</span><span class="label">Arrêts avec photos</span><span class="check"></span></button>
-      <button class="sub-btn" id="btn-t-petits" onclick="toggleType('petits')"><span class="icon">⚪</span><span class="label">Petits arrêts</span><span class="check"></span></button>
+    <button class="grp-btn" id="grpbtn-jours" onclick="toggleGroup('jours')" aria-label="Étapes" title="Étapes">🗓️</button>
+    <div class="grp-menu" id="grpmenu-jours">
+      <div class="sub-label" id="jours-label">Étapes du voyage</div>
+      <div id="menu-jours" style="display:flex;flex-direction:column;gap:5px"></div>
+    </div>
+  </div>
+  <div class="ctrl-group">
+    <button class="grp-btn" id="grpbtn-poi" onclick="toggleGroup('poi')" aria-label="Points d'intérêt" title="Points d'intérêt">📸</button>
+    <div class="grp-menu" id="grpmenu-poi">
+      <div class="sub-label">Points d'intérêt (photos)</div>
+      <button class="sub-btn active" id="btn-t-photos" onclick="toggleType('photos')"><span class="icon">📸</span><span class="label" id="lbl-photos">Arrêts marquants</span><span class="check"></span></button>
+      <button class="sub-btn" id="btn-t-petits" onclick="toggleType('petits')"><span class="icon">🔹</span><span class="label" id="lbl-petits">Autres arrêts, moins marquants</span><span class="check"></span></button>
     </div>
   </div>
 </div>
@@ -171,7 +174,7 @@ const dayIdx = d => TRACE.findIndex(x => x.date === d);
 const dayLabel = d => (TRACE[dayIdx(d)] || {}).label || d;
 // un groupe par jour et par type (tracé / arrêts / petits arrêts), affiché si le jour ET le type sont cochés
 const TL = TRACE.map(() => ({ trace:L.layerGroup(), photos:L.layerGroup(), petits:L.layerGroup() }));
-const dayOn = TRACE.map(() => true), typeOn = { trace:true, photos:true, petits:false };
+const dayOn = TRACE.map(() => true), typeOn = { photos:true, petits:false };
 TRACE.forEach((d, i) => d.segments.forEach(s => {
   L.polyline(s.c, { color:DAY_COLORS[i % DAY_COLORS.length], weight:s.t === 'foot' ? 3 : 4, opacity:.85, dashArray:s.t === 'foot' ? '2 7' : null, interactive:false }).addTo(TL[i].trace);
 }));
@@ -201,17 +204,17 @@ STOPS.forEach((s, i) => {
 });
 function refreshTrace(){
   TL.forEach((g, i) => ['trace','photos','petits'].forEach(t => {
-    const on = dayOn[i] && typeOn[t];
+    const on = dayOn[i] && (t === 'trace' || typeOn[t]);
     if (on) g[t].addTo(map); else map.removeLayer(g[t]);
   }));
   TRACE.forEach((d, i) => syncSubBtn('btn-jour' + i, dayOn[i]));
-  ['trace','photos','petits'].forEach(t => syncSubBtn('btn-t-' + t, typeOn[t]));
+  ['photos','petits'].forEach(t => syncSubBtn('btn-t-' + t, typeOn[t]));
 }
 function toggleDay(i){ dayOn[i] = !dayOn[i]; refreshTrace(); }
 function toggleType(t){ typeOn[t] = !typeOn[t]; refreshTrace(); }
 function soloDay(i){ dayOn.fill(false); dayOn[i] = true; refreshTrace(); }
 document.getElementById('menu-jours').innerHTML = TRACE.map((d, i) =>
-  `<button class="sub-btn active" id="btn-jour${i}" onclick="toggleDay(${i})"><span class="icon"><span class="dot" style="background:${DAY_COLORS[i % DAY_COLORS.length]}"></span></span><span class="label">${d.label}</span><span class="check"></span></button>`).join('');
+  `<button class="sub-btn active" id="btn-jour${i}" onclick="toggleDay(${i})"><span class="icon"><span class="dot" style="background:${DAY_COLORS[i % DAY_COLORS.length]}">${i + 1}</span></span><span class="label">J${i + 1} — ${d.label}</span><span class="check"></span></button>`).join('');
 refreshTrace();
 
 // ── UI ──
