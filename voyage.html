@@ -124,7 +124,7 @@ const bounds = [];
 const nbEtapes = LIEUX.filter(l => l.ordre).length;
 LIEUX.forEach(l => {
   const c = CATS[l.cat];
-  const gmaps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(l.name + ', ' + l.addr);
+  const gmaps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(l.cat === 'maison' ? l.addr : l.name + ', ' + l.addr);
   L.marker(l.ll, { icon:pinIcon(c, l.cat==='maison', l.ordre), zIndexOffset:1000, title:l.name })
     .bindPopup(`<span class="popup-kind" style="background:${c.color}">${c.emoji} ${c.label}</span>
       <div class="popup-title">${l.name}</div>
