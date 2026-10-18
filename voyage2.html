@@ -44,6 +44,7 @@ body { font-family:Arial,sans-serif; background:#3c0f1c; }
 .photo-badge { position:absolute; left:6px; bottom:6px; background:rgba(0,0,0,.6); color:#fff; font-size:11px; padding:1px 6px; border-radius:8px; }
 .photo-nav { position:absolute; top:50%; transform:translateY(-50%); width:30px; height:40px; border:none; background:rgba(0,0,0,.45); color:#fff; font-size:22px; cursor:pointer; }
 .photo-nav.prev { left:0; border-radius:0 6px 6px 0; } .photo-nav.next { right:0; border-radius:6px 0 0 6px; }
+.dot { display:inline-block; width:14px; height:14px; border-radius:50%; vertical-align:middle; }
 .pin-photo { display:flex; align-items:center; justify-content:center; border-radius:50%; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.45); font-size:11px; }
 </style>
 </head>
@@ -55,17 +56,24 @@ body { font-family:Arial,sans-serif; background:#3c0f1c; }
   <div class="ctrl-group">
     <button class="grp-btn" id="grpbtn-filtres" onclick="toggleGroup('filtres')" aria-label="Filtres">🗺️</button>
     <div class="grp-menu" id="grpmenu-filtres">
-      <div class="sub-label">Afficher</div>
+      <div class="sub-label">Lieux et régions</div>
       <button class="sub-btn active" id="btn-regions" onclick="toggleLayer('regions')"><span class="icon">🟣</span><span class="label">Régions de Bourgogne</span><span class="check"></span></button>
       <button class="sub-btn active" id="btn-vignobles" onclick="toggleLayer('vignobles')"><span class="icon">🍇</span><span class="label">Vignobles (5)</span><span class="check"></span></button>
       <button class="sub-btn active" id="btn-maison" onclick="toggleLayer('maison')"><span class="icon">🏠</span><span class="label">Maison (1)</span><span class="check"></span></button>
       <button class="sub-btn" id="btn-restaurants" onclick="toggleLayer('restaurants')"><span class="icon">🍽️</span><span class="label">Restaurants (2)</span><span class="check"></span></button>
       <button class="sub-btn" id="btn-visites" onclick="toggleLayer('visites')"><span class="icon">🏛️</span><span class="label">Visites (2)</span><span class="check"></span></button>
+    </div>
+  </div>
+  <div class="ctrl-group">
+    <button class="grp-btn" id="grpbtn-trace" onclick="toggleGroup('trace')" aria-label="Tracé et photos">📸</button>
+    <div class="grp-menu" id="grpmenu-trace">
+      <div class="sub-label">Jour</div>
+      <div id="menu-jours"></div>
       <div class="sub-sep"></div>
-      <div class="sub-label">Tracé réel (photos)</div>
-      <button class="sub-btn active" id="btn-trace" onclick="toggleLayer('trace')"><span class="icon">🛣️</span><span class="label">Tracé : sam. bleu · dim. orange · lun. vert</span><span class="check"></span></button>
-      <button class="sub-btn active" id="btn-photos" onclick="toggleLayer('photos')"><span class="icon">📸</span><span class="label">Arrêts avec photos</span><span class="check"></span></button>
-      <button class="sub-btn" id="btn-petits" onclick="toggleLayer('petits')"><span class="icon">⚪</span><span class="label">Petits arrêts</span><span class="check"></span></button>
+      <div class="sub-label">Afficher</div>
+      <button class="sub-btn" id="btn-t-trace" onclick="toggleType('trace')"><span class="icon">🛣️</span><span class="label">Tracé (trait plein : voiture, pointillés : à pied)</span><span class="check"></span></button>
+      <button class="sub-btn" id="btn-t-photos" onclick="toggleType('photos')"><span class="icon">📸</span><span class="label">Arrêts avec photos</span><span class="check"></span></button>
+      <button class="sub-btn" id="btn-t-petits" onclick="toggleType('petits')"><span class="icon">⚪</span><span class="label">Petits arrêts</span><span class="check"></span></button>
     </div>
   </div>
 </div>
@@ -108,9 +116,9 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // ── COUCHES ──
-const layers = { regions: L.layerGroup(), vignobles: L.layerGroup(), restaurants: L.layerGroup(), maison: L.layerGroup(), visites: L.layerGroup(), trace: L.layerGroup(), photos: L.layerGroup(), petits: L.layerGroup() };
-const layerState = { regions:false, vignobles:false, restaurants:false, maison:false, visites:false, trace:false, photos:false, petits:false };
-const DEFAULT_ON = ['regions','vignobles','maison','trace','photos'];
+const layers = { regions: L.layerGroup(), vignobles: L.layerGroup(), restaurants: L.layerGroup(), maison: L.layerGroup(), visites: L.layerGroup() };
+const layerState = { regions:false, vignobles:false, restaurants:false, maison:false, visites:false };
+const DEFAULT_ON = ['regions','vignobles','maison'];
 
 const byRegion = {};
 COMMUNES_DATA.features.forEach(f => (byRegion[f.properties.region] = byRegion[f.properties.region] || []).push(f));
@@ -161,8 +169,11 @@ const IMMICH = "https://photo.itcg-consulting.com:5010";
 const DAY_COLORS = ['#1f78b4', '#e07b00', '#2a9d8f'];
 const dayIdx = d => TRACE.findIndex(x => x.date === d);
 const dayLabel = d => (TRACE[dayIdx(d)] || {}).label || d;
+// un groupe par jour et par type (tracé / arrêts / petits arrêts), affiché si le jour ET le type sont cochés
+const TL = TRACE.map(() => ({ trace:L.layerGroup(), photos:L.layerGroup(), petits:L.layerGroup() }));
+const dayOn = TRACE.map(() => true), typeOn = { trace:true, photos:true, petits:false };
 TRACE.forEach((d, i) => d.segments.forEach(s => {
-  L.polyline(s.c, { color:DAY_COLORS[i % DAY_COLORS.length], weight:s.t === 'foot' ? 3 : 4, opacity:.85, dashArray:s.t === 'foot' ? '2 7' : null, interactive:false }).addTo(layers.trace);
+  L.polyline(s.c, { color:DAY_COLORS[i % DAY_COLORS.length], weight:s.t === 'foot' ? 3 : 4, opacity:.85, dashArray:s.t === 'foot' ? '2 7' : null, interactive:false }).addTo(TL[i].trace);
 }));
 const PHOTO_SETS = {};
 const thumbUrl = id => `${IMMICH}/api/assets/${id}/thumbnail?size=preview`;
@@ -186,8 +197,22 @@ STOPS.forEach((s, i) => {
       <div class="popup-title">${s.name}</div>
       <div class="popup-addr">${s.range} · ${n} photo${n > 1 ? 's' : ''}</div>
       <a class="popup-link" id="link-${k}" href="${IMMICH}/photos/${ps.photos[0][0]}" target="_blank" rel="noopener">Voir sur Immich ↗</a>`;
-  }, { minWidth:230 }).addTo(s.major ? layers.photos : layers.petits);
+  }, { minWidth:230 }).addTo(TL[ci][s.major ? 'photos' : 'petits']);
 });
+function refreshTrace(){
+  TL.forEach((g, i) => ['trace','photos','petits'].forEach(t => {
+    const on = dayOn[i] && typeOn[t];
+    if (on) g[t].addTo(map); else map.removeLayer(g[t]);
+  }));
+  TRACE.forEach((d, i) => syncSubBtn('btn-jour' + i, dayOn[i]));
+  ['trace','photos','petits'].forEach(t => syncSubBtn('btn-t-' + t, typeOn[t]));
+}
+function toggleDay(i){ dayOn[i] = !dayOn[i]; refreshTrace(); }
+function toggleType(t){ typeOn[t] = !typeOn[t]; refreshTrace(); }
+function soloDay(i){ dayOn.fill(false); dayOn[i] = true; refreshTrace(); }
+document.getElementById('menu-jours').innerHTML = TRACE.map((d, i) =>
+  `<button class="sub-btn active" id="btn-jour${i}" onclick="toggleDay(${i})"><span class="icon"><span class="dot" style="background:${DAY_COLORS[i % DAY_COLORS.length]}"></span></span><span class="label">${d.label}</span><span class="check"></span></button>`).join('');
+refreshTrace();
 
 // ── UI ──
 function syncSubBtn(id, on){ document.getElementById(id).classList.toggle('active', on); }
@@ -198,6 +223,8 @@ function toggleLayer(name, force){
   syncSubBtn('btn-' + name, on);
 }
 function toggleGroup(name){
+  document.querySelectorAll('.grp-menu').forEach(m => { if (m.id !== 'grpmenu-' + name) m.classList.remove('open'); });
+  document.querySelectorAll('.grp-btn').forEach(b => { if (b.id !== 'grpbtn-' + name) b.classList.remove('open'); });
   const open = document.getElementById('grpmenu-' + name).classList.toggle('open');
   document.getElementById('grpbtn-' + name).classList.toggle('open', open);
 }
