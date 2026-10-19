@@ -4,7 +4,7 @@ Pages de préparation et de suivi d'un voyage en Bourgogne.
 
 - `index.html` : menu d'accueil (séjour du 17 au 19 octobre 2026).
 - `preparation.html` : préparation (domaines, régions viticoles).
-- `voyage.html` : carte du voyage avec filtres (régions, vignobles, restaurants, maison, visites).
+- `voyage.html` : carte du voyage avec filtres (régions, vignobles, restaurants, maison, visites), tracé réel jour par jour et photos de l'album Immich (généré par `outils/`).
 
 Page statique, sans build. En local : `python3 -m http.server 8000`.
 
